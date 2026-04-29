@@ -276,7 +276,7 @@ _Generado vía Calculadora Patagonia Coach_ 🏔️
               <div className="flex items-center space-x-2">
                 <span className="opacity-50">Diseño y Soporte por</span>
                 <a 
-                  href="https://patagoniacoach.com" 
+                  href="https://agenciapatagoniacoach.cl" 
                   target="_blank" 
                   className="text-red-600 hover:text-red-700 transition-colors font-black tracking-[0.4em] text-[11px]"
                 >

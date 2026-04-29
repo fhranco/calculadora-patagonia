@@ -26,7 +26,7 @@ Desarrollado para **Comercial de la Patagonia**, con base en la Zona Franca de P
 
 Esta plataforma es mantenida y soportada por:
 **AGENCIA PATAGONIACOACH**  
-[www.patagoniacoach.com](https://patagoniacoach.com)
+[www.agenciapatagoniacoach.cl](https://agenciapatagoniacoach.cl)
 
 ---
 © 2026 Comercial de la Patagonia. Todos los derechos reservados.
