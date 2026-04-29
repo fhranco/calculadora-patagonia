@@ -274,7 +274,7 @@ _Generado vía Calculadora Patagonia Coach_ 🏔️
             <div className="mt-16 pt-8 border-t border-blue-900 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 text-[10px] text-blue-400 font-bold uppercase tracking-[0.3em]">
               <p>© 2026 COMERCIAL DE LA PATAGONIA</p>
               <div className="flex items-center space-x-2">
-                <span className="opacity-50">Diseño y Soporte por</span>
+                <span className="opacity-50">Desarrollado por</span>
                 <a 
                   href="https://agenciapatagoniacoach.cl" 
                   target="_blank" 
