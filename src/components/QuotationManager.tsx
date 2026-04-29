@@ -1,15 +1,16 @@
 import React from 'react';
-import { FileText, Trash2 } from 'lucide-react';
+import { FileText, Trash2, Download, MessageCircle } from 'lucide-react';
 import { Calculation } from '../types/materials';
 import { formatCurrency } from '../utils/calculations';
+import { generatePDF } from '../utils/pdfGenerator';
 
 interface QuotationManagerProps {
   calculations: Calculation[];
   onClearCalculations: () => void;
   onViewCalculation: (calculation: Calculation) => void;
   onDeleteCalculation: (calculationId: string) => void;
-  showShareDialog: boolean;
-  setShowShareDialog: (show: boolean) => void;
+  onRequestLead: () => void;
+  onRequestPDF: () => void;
 }
 
 const QuotationManager: React.FC<QuotationManagerProps> = ({
@@ -17,8 +18,8 @@ const QuotationManager: React.FC<QuotationManagerProps> = ({
   onClearCalculations,
   onViewCalculation,
   onDeleteCalculation,
-  showShareDialog,
-  setShowShareDialog
+  onRequestLead,
+  onRequestPDF
 }) => {
   const totalCost = calculations.reduce((sum, calc) => sum + calc.totalCostWithExtra, 0);
 
@@ -80,17 +81,23 @@ const QuotationManager: React.FC<QuotationManagerProps> = ({
             ))}
           </div>
 
-          <div className="flex gap-4">
-            <button
-              onClick={() => setShowShareDialog(true)}
-              className="w-full bg-[#1a2b4b] hover:bg-blue-900 text-white py-6 rounded-2xl shadow-xl transform hover:-translate-y-1 transition-all flex flex-col items-center justify-center group"
-            >
-              <div className="flex items-center text-lg font-corporate font-light tracking-[0.2em]">
-                <FileText className="w-5 h-5 mr-4 text-[#fec62b]" />
-                SOLICITAR <span className="font-bold ml-2">ASESORÍA</span>
-              </div>
-              <span className="text-[8px] mt-2 opacity-50 uppercase tracking-[0.4em] font-light group-hover:opacity-100 transition-opacity">Región de Magallanes y Antártica Chilena</span>
-            </button>
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-4">
+              <button
+                onClick={onRequestPDF}
+                className="flex-1 bg-white text-blue-900 border-2 border-blue-900 font-corporate font-bold py-4 rounded-xl hover:bg-blue-50 transition-all flex items-center justify-center space-x-3 uppercase tracking-widest text-sm"
+              >
+                <Download className="w-5 h-5" />
+                <span>Descargar PDF</span>
+              </button>
+              <button
+                onClick={onRequestLead}
+                className="flex-1 bg-[#1a2b4b] hover:bg-blue-900 text-white py-4 rounded-xl shadow-xl transition-all flex items-center justify-center group space-x-3"
+              >
+                <MessageCircle className="w-5 h-5 text-[#fec62b]" />
+                <span className="font-corporate font-bold tracking-widest uppercase text-sm">WhatsApp</span>
+              </button>
+            </div>
             <button
               onClick={onClearCalculations}
               className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center h-[72px]"

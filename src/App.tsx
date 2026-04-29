@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, MapPin, MessageCircle, Instagram, Facebook, Phone } from 'lucide-react';
+import { FileText, MessageCircle, Instagram, Facebook, Phone, Download } from 'lucide-react';
+import { Analytics, track } from '@vercel/analytics/react';
 import Header from './components/Header';
 import MaterialSelector from './components/MaterialSelector';
 import CalculatorPopup from './components/CalculatorPopup';
@@ -9,11 +10,13 @@ import LeadForm from './components/LeadForm';
 import TipsSection from './components/TipsSection';
 import { materials } from './data/materials';
 import { Calculation } from './types/materials';
+import { generatePDF } from './utils/pdfGenerator';
 
 function App() {
   const [selectedMaterialId, setSelectedMaterialId] = useState<string | null>(null);
   const [showCalculator, setShowCalculator] = useState<boolean>(false);
   const [showLeadForm, setShowLeadForm] = useState<boolean>(false);
+  const [leadMode, setLeadMode] = useState<'whatsapp' | 'pdf'>('whatsapp');
   const [savedCalculations, setSavedCalculations] = useState<Calculation[]>([]);
   const [selectedCalculation, setSelectedCalculation] = useState<Calculation | null>(null);
 
@@ -31,9 +34,11 @@ function App() {
   }, []);
 
   // Funciones de manejo
-  const handleMaterialSelect = (materialId: string) => {
-    setSelectedMaterialId(materialId);
+  const handleMaterialSelect = (id: string) => {
+    setSelectedMaterialId(id);
+    setSelectedCalculation(null);
     setShowCalculator(true);
+    track('material_viewed', { materialId: id });
   };
 
   const handleCloseCalculator = () => {
@@ -119,10 +124,17 @@ El cliente está a la espera de confirmación de stock y costos de envío para l
 _Generado vía Calculadora Patagonia Coach_ 🏔️
     `.trim();
 
-    const whatsappLink = `https://wa.me/56985806127?text=${encodeURIComponent(message)}`;
-    window.open(whatsappLink, '_blank');
+    if (leadMode === 'pdf') {
+      track('lead_conversion_pdf', { client: data.clientName });
+      generatePDF(savedCalculations, { name: data.clientName, phone: data.clientPhone });
+    } else {
+      track('lead_conversion_whatsapp', { client: data.clientName });
+      const whatsappLink = `https://wa.me/56985806127?text=${encodeURIComponent(message)}`;
+      window.open(whatsappLink, '_blank');
+    }
+
     setShowLeadForm(false);
-    alert('¡Excelente! Tu solicitud ha sido enviada al equipo técnico.');
+    alert('¡Excelente! Tu solicitud ha sido procesada.');
   };
 
   return (
@@ -140,11 +152,18 @@ _Generado vía Calculadora Patagonia Coach_ 🏔️
           onClearCalculations={handleClearCalculations}
           onViewCalculation={handleViewCalculation}
           onDeleteCalculation={handleDeleteCalculation}
-          showShareDialog={showLeadForm}
-          setShowShareDialog={setShowLeadForm}
+          onRequestLead={() => {
+            setLeadMode('whatsapp');
+            setShowLeadForm(true);
+          }}
+          onRequestPDF={() => {
+            setLeadMode('pdf');
+            setShowLeadForm(true);
+          }}
         />
 
         <TipsSection selectedMaterial={selectedMaterial} />
+        <Analytics />
       </main>
 
       <CalculatorPopup
@@ -152,7 +171,10 @@ _Generado vía Calculadora Patagonia Coach_ 🏔️
         isOpen={showCalculator}
         onClose={handleCloseCalculator}
         onSaveCalculation={handleSaveCalculation}
-        onRequestLead={() => setShowLeadForm(true)}
+        onRequestLead={() => {
+          setLeadMode('whatsapp');
+          setShowLeadForm(true);
+        }}
         initialCalculation={selectedCalculation}
       />
 
@@ -300,6 +322,14 @@ _Generado vía Calculadora Patagonia Coach_ 🏔️
           ¿Necesitas ayuda?
         </span>
       </a>
+
+      {/* Formulario de Lead Global */}
+      <LeadForm
+        isOpen={showLeadForm}
+        onClose={() => setShowLeadForm(false)}
+        calculations={savedCalculations}
+        onSuccess={handleLeadSuccess}
+      />
 
       {/* Botón Flotante de Revisión (Izquierda) */}
       {savedCalculations.length > 0 && !showLeadForm && !showCalculator && (
